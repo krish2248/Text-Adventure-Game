@@ -1,0 +1,2592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text Adventure Game</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: #121212;
+      color: #f1f1f1;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    header {
+      width: 100%;
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    header h1 {
+      margin: 0;
+    }
+    #toggleTheme {
+      position: absolute;
+      right: 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    #toggleTheme:hover {
+      background-color: #555;
+    }
+    footer {
+      width: 100%;
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+      padding: 10px 0;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    footer a {
+      color: #f1f1f1;
+      text-decoration: none;
+      margin: 0 10px;
+      transition: color 0.3s;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+    #game {
+      max-width: 750px; /* Increased width */
+      width: 100%;
+      background-color: #1e1e1e;
+      border: 2px solid #444;
+      border-radius: 10px;
+      padding: 20px; /* Increased padding */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      margin: 200px 0; /* Adjusted margin for better spacing */
+      flex-grow: 1;
+      transition: background-color 0.3s, color 0.3s;
+      font-size: 1.2rem; /* Increased font size */
+    }
+    #story {
+      margin-bottom: 30px; /* Increased spacing */
+      font-size: 1.2rem; /* Increased font size */
+    }
+    .option-btn {
+      display: block;
+      margin: 15px 0; /* Increased margin */
+      padding: 15px; /* Increased padding */
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+      font-size: 1.1rem; /* Increased font size */
+    }
+    .option-btn:hover {
+      background-color: #555;
+    }
+    select {
+      padding: 15px; /* Increased padding */
+      margin-bottom: 20px;
+      border-radius: 5px;
+      font-size: 1.1rem; /* Increased font size */
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Text-Adventures</h1>
+    <button id="toggleTheme">Dark/Light Mode</button>
+  </header>
+  <div id="game">
+    <h2>Choose Your Adventure</h2>
+    <select id="adventureSelect"></select>
+    <div id="story"></div>
+    <div id="options"></div>
+    <button id="restartAdventure" class="option-btn">Restart Adventure</button>
+  </div>
+  <footer>
+    <a href="https://www.instagram.com/notkrish03/" target="_blank">Instagram</a>
+    <a href="https://www.linkedin.com/in/krish-soni-460932228/" target="_blank">LinkedIn</a>
+    <a href="https://medium.com/@sonikrish2248" target="_blank">Medium</a>
+    <a href="https://sonikrish2248.com" target="_blank">Portfolio</a>
+    <a href="https://github.com/krish2248" target="_blank">GitHub</a>
+  </footer>
+  <script>
+    const adventures = {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      "Medieval Fantasy": [
+  {
+    text: "You are Sir Kael, a knight of Eldoria. A dragon scorches the southern plains. Do you fight it alone or seek aid from the ancient wizard Maldrin?",
+    options: [
+      { text: "Fight the dragon alone", next: 1 },
+      { text: "Seek Maldrin the wizard", next: 2 }
+    ]
+  },
+  {
+    text: "You bravely battle the dragon but perish in its flames. Songs are sung of your courage.",
+    options: []
+  },
+  {
+    text: "Maldrin grants you a choice: a magical sword or knowledge of an ancient dragon-weakening ritual.",
+    options: [
+      { text: "Take the magical sword", next: 3 },
+      { text: "Learn the ancient ritual", next: 4 }
+    ]
+  },
+  {
+    text: "With the magical sword, you slay the dragon. The people hail you as a hero. Do you return home or seek new threats?",
+    options: [
+      { text: "Return home", next: 5 },
+      { text: "Seek new threats", next: 6 }
+    ]
+  },
+  {
+    text: "The ritual requires rare herbs from the haunted forests of Myrr. Do you venture there or find someone else to retrieve them?",
+    options: [
+      { text: "Enter the haunted forest", next: 7 },
+      { text: "Hire a local herbalist", next: 8 }
+    ]
+  },
+  {
+    text: "You retire in peace, telling tales of your glory to your children.",
+    options: []
+  },
+  {
+    text: "You slay a necromancer threatening the north. Your legend grows.",
+    options: [
+      { text: "Build a guild of adventurers", next: 9 },
+      { text: "Journey alone into the forbidden lands", next: 10 }
+    ]
+  },
+  {
+    text: "In the forest, you’re attacked by spirits. Do you use fire or try to speak to them?",
+    options: [
+      { text: "Use fire", next: 11 },
+      { text: "Speak to the spirits", next: 12 }
+    ]
+  },
+  {
+    text: "The herbalist is kidnapped by bandits. Do you pay their ransom or rescue him?",
+    options: [
+      { text: "Pay ransom", next: 13 },
+      { text: "Rescue him", next: 14 }
+    ]
+  },
+  {
+    text: "You form the Silver Blades guild. Do you recruit only knights or all who seek justice?",
+    options: [
+      { text: "Only knights", next: 15 },
+      { text: "All who seek justice", next: 16 }
+    ]
+  },
+  {
+    text: "In the forbidden lands, you find an ancient artifact. It calls to you. Do you claim it or bury it?",
+    options: [
+      { text: "Claim it", next: 17 },
+      { text: "Bury it", next: 18 }
+    ]
+  },
+  {
+    text: "The fire enrages the spirits. You barely escape with your life.",
+    options: []
+  },
+  {
+    text: "The spirits reveal the forest's curse and bless your quest. You retrieve the herbs.",
+    options: [ { text: "Perform the ritual", next: 19 } ]
+  },
+  {
+    text: "The ransom is paid, but the bandits flee. The ritual fails without the right herbs.",
+    options: []
+  },
+  {
+    text: "You rescue him and recover the herbs. He joins you as a loyal companion.",
+    options: [ { text: "Perform the ritual", next: 19 } ]
+  },
+  {
+    text: "Your guild is strong but narrow in skill. When orcs invade, you lack magic and fall.",
+    options: []
+  },
+  {
+    text: "Your diverse guild stops wars and unites factions. You are named High Warden of the Realm.",
+    options: []
+  },
+  {
+    text: "The artifact corrupts your mind. You become a dark sorcerer, feared across lands.",
+    options: []
+  },
+  {
+    text: "You bury it, resisting temptation. A celestial grants you a boon for your strength.",
+    options: [ { text: "Accept the boon", next: 20 } ]
+  },
+  {
+    text: "The ritual weakens the dragon. With Maldrin's help, you defeat it. The people want you as king.",
+    options: [
+      { text: "Accept the crown", next: 21 },
+      { text: "Decline and disappear", next: 22 }
+    ]
+  },
+  {
+    text: "The celestial grants you the ability to heal others with touch. You become a wandering savior.",
+    options: []
+  },
+  {
+    text: "As king, you face a famine and foreign invasion. Do you focus on diplomacy or military strength?",
+    options: [
+      { text: "Diplomacy", next: 23 },
+      { text: "Military strength", next: 24 }
+    ]
+  },
+  {
+    text: "You vanish into legend. Some say you became one with the wind.",
+    options: []
+  },
+  {
+    text: "Diplomacy prevails. You secure allies, and the realm prospers.",
+    options: []
+  },
+  {
+    text: "You repel the invaders but at great cost. The people mourn the loss of culture and peace.",
+    options: []
+  },
+  {
+    text: "You awaken in a strange future where dragons rule. Do you fight or blend in as a servant?",
+    options: [
+      { text: "Fight the dragon overlords", next: 25 },
+      { text: "Blend in", next: 26 }
+    ]
+  },
+  {
+    text: "You lead a resistance in the future and free the enslaved. You’re a time-shattered hero.",
+    options: []
+  },
+  {
+    text: "You learn the dragons’ secrets. In time, you outwit them and change the course of history.",
+    options: []
+  },
+  {
+    text: "A portal opens. A fae queen offers to take you to her realm. Do you accept?",
+    options: [
+      { text: "Accept", next: 27 },
+      { text: "Refuse", next: 28 }
+    ]
+  },
+  {
+    text: "You are taken to the Fae Court and given eternal life, but never return to the mortal realm.",
+    options: []
+  },
+  {
+    text: "You live a mortal life but retain the memory of fae wonders. You write books that inspire generations.",
+    options: []
+  },
+  {
+    text: "The wizard Maldrin is revealed to be the dragon’s sibling. Do you confront or ally with him?",
+    options: [
+      { text: "Confront him", next: 29 },
+      { text: "Ally with him", next: 30 }
+    ]
+  },
+  {
+    text: "You slay Maldrin and inherit both his power and curse. Darkness follows your legacy.",
+    options: []
+  },
+  {
+    text: "You ally with Maldrin and learn to tame dragons. You become the first Dragonlord of Eldoria.",
+    options: []
+  },
+  {
+    text: "The magical sword speaks. It asks to be returned to the celestial forge. Do you obey?",
+    options: [
+      { text: "Return it", next: 31 },
+      { text: "Keep it", next: 32 }
+    ]
+  },
+  {
+    text: "You return the sword. A phoenix is born from the forge’s flame and grants you fire wings.",
+    options: []
+  },
+  {
+    text: "You keep the sword. It consumes your soul slowly, turning you into a wraith bound to war.",
+    options: []
+  },
+  {
+    text: "A child approaches you, claiming to be your descendant from a different timeline. Do you trust them?",
+    options: [
+      { text: "Trust them", next: 33 },
+      { text: "Test them", next: 34 }
+    ]
+  },
+  {
+    text: "They guide you to undo a great wrong. Peace is restored across timelines.",
+    options: []
+  },
+  {
+    text: "They fail the test. You realize they were a trickster spirit in disguise.",
+    options: []
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+,
+      "Dungeon Crawl": [
+  {
+    text: "You stand at the entrance of the infamous Forgotten Dungeon. Two corridors stretch before you: one to the left, the other right.",
+    options: [
+      { text: "Go left", next: 1 },
+      { text: "Go right", next: 2 }
+    ]
+  },
+  {
+    text: "You step onto a hidden plate — a spike trap is triggered! You fall. Game over.",
+    options: []
+  },
+  {
+    text: "The corridor opens into a dusty chamber with a treasure chest. Do you open it or inspect it first?",
+    options: [
+      { text: "Open it immediately", next: 3 },
+      { text: "Inspect for traps", next: 4 }
+    ]
+  },
+  {
+    text: "You open the chest and an explosion spell triggers. You're blown back — unconscious. Game over.",
+    options: []
+  },
+  {
+    text: "You disarm a trap and open the chest safely. Inside is gold and a map with cryptic runes.",
+    options: [
+      { text: "Follow the map", next: 5 },
+      { text: "Pocket the gold and leave", next: 6 }
+    ]
+  },
+  {
+    text: "The map leads deeper into the dungeon. You reach a fork marked 'Trial of Strength' and 'Trial of Wit'.",
+    options: [
+      { text: "Trial of Strength", next: 7 },
+      { text: "Trial of Wit", next: 8 }
+    ]
+  },
+  {
+    text: "You exit the dungeon, richer and wiser — but you'll always wonder what was beyond the map.",
+    options: []
+  },
+  {
+    text: "You enter a chamber with a giant stone golem. Fight or flee?",
+    options: [
+      { text: "Fight", next: 9 },
+      { text: "Flee", next: 10 }
+    ]
+  },
+  {
+    text: "You enter a room of shifting tiles and riddles. A voice echoes: 'Only truth unlocks the way.'",
+    options: [
+      { text: "Answer riddle", next: 11 },
+      { text: "Search for secret doors", next: 12 }
+    ]
+  },
+  {
+    text: "You defeat the golem with brute strength. Behind it is a golden door.",
+    options: [ { text: "Open the golden door", next: 13 } ]
+  },
+  {
+    text: "You flee but get lost in a maze of mirrors. Eventually, you collapse from thirst. Game over.",
+    options: []
+  },
+  {
+    text: "'I speak without a mouth and hear without ears. I have no body, but I come alive with wind.'",
+    options: [
+      { text: "Answer: Echo", next: 14 },
+      { text: "Answer: Ghost", next: 15 }
+    ]
+  },
+  {
+    text: "You find a secret passage leading to a dark library of forbidden tomes.",
+    options: [
+      { text: "Read a tome", next: 16 },
+      { text: "Ignore and move on", next: 17 }
+    ]
+  },
+  {
+    text: "The golden door reveals a vault of ancient artifacts. Do you take the jeweled crown?",
+    options: [
+      { text: "Take the crown", next: 18 },
+      { text: "Leave it alone", next: 19 }
+    ]
+  },
+  {
+    text: "You solve the riddle. A hidden wall slides open.",
+    options: [ { text: "Enter the passage", next: 20 } ]
+  },
+  {
+    text: "Wrong answer! The floor collapses beneath you. Game over.",
+    options: []
+  },
+  {
+    text: "The tome curses you with madness. You laugh as the dungeon swallows you whole.",
+    options: []
+  },
+  {
+    text: "You exit the library safely and feel a sense of ancient knowledge pass through you.",
+    options: [ { text: "Press forward", next: 21 } ]
+  },
+  {
+    text: "The crown is cursed. Shadows bind you to the throne. You become the next dungeon guardian.",
+    options: []
+  },
+  {
+    text: "You resist temptation and leave with your life. The vault seals behind you.",
+    options: []
+  },
+  {
+    text: "You enter a crystal cavern. At the center is a pedestal with a glowing orb.",
+    options: [
+      { text: "Touch the orb", next: 22 },
+      { text: "Observe first", next: 23 }
+    ]
+  },
+  {
+    text: "The orb grants you the ability to see hidden paths. You now see hidden doorways all around.",
+    options: [ { text: "Take a hidden path", next: 24 } ]
+  },
+  {
+    text: "You notice runes on the orb and avoid touching it. A shadow slips past you.",
+    options: [ { text: "Follow the shadow", next: 25 } ]
+  },
+  {
+    text: "The path leads to a room with a glowing portal. Do you enter it or destroy it?",
+    options: [
+      { text: "Enter portal", next: 26 },
+      { text: "Destroy portal", next: 27 }
+    ]
+  },
+  {
+    text: "You follow the shadow into a crypt. It speaks: 'Free me, or suffer my fate.'",
+    options: [
+      { text: "Free the spirit", next: 28 },
+      { text: "Leave it trapped", next: 29 }
+    ]
+  },
+  {
+    text: "You step into another dimension of floating ruins. Do you explore or find a way home?",
+    options: [
+      { text: "Explore further", next: 30 },
+      { text: "Search for a way back", next: 31 }
+    ]
+  },
+  {
+    text: "You destroy the portal — a thousand shrieking voices cry out. You’re marked by the void.",
+    options: []
+  },
+  {
+    text: "The spirit blesses you with insight and shows you a secret treasure vault.",
+    options: [ { text: "Enter vault", next: 32 } ]
+  },
+  {
+    text: "You leave it trapped, and a curse slowly begins to drain your vitality.",
+    options: []
+  },
+  {
+    text: "You float among ruins and find a crystal blade untouched by time. Wield it or leave it?",
+    options: [
+      { text: "Wield the blade", next: 33 },
+      { text: "Leave it", next: 34 }
+    ]
+  },
+  {
+    text: "You find a runestone that teleports you back to the dungeon, wiser and stronger.",
+    options: []
+  },
+  {
+    text: "The vault is full of enchanted relics. Do you take one or all?",
+    options: [
+      { text: "Take one", next: 35 },
+      { text: "Take all", next: 36 }
+    ]
+  },
+  {
+    text: "The blade bonds to your soul. You become the guardian of the outer dimension.",
+    options: []
+  },
+  {
+    text: "You respect its power and move on. You feel the universe silently thank you.",
+    options: []
+  },
+  {
+    text: "You take a single relic — a ring of wisdom. It protects you from the dungeon's illusions.",
+    options: [ { text: "Continue journey", next: 37 } ]
+  },
+  {
+    text: "Greed overwhelms you. The vault collapses into darkness with you inside.",
+    options: []
+  },
+  {
+    text: "You arrive at the Heart of the Dungeon — a sentient crystal pulsing with ancient energy.",
+    options: [
+      { text: "Touch it", next: 38 },
+      { text: "Speak to it", next: 39 }
+    ]
+  },
+  {
+    text: "It consumes your essence. You become one with the dungeon forever.",
+    options: []
+  },
+  {
+    text: "It speaks back: 'You have walked the paths and passed the trials. Ask one wish.'",
+    options: [
+      { text: "Wish for power", next: 40 },
+      { text: "Wish for freedom", next: 41 }
+    ]
+  },
+  {
+    text: "You become a demigod, feared and revered, trapped between realms.",
+    options: []
+  },
+  {
+    text: "The dungeon collapses. You awaken in a field, free and at peace.",
+    options: []
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+,
+      "Prison Escape": [
+  {
+    text: "You're locked in Ironclad Prison for a crime you didn’t commit. Do you bribe a guard or dig a tunnel?",
+    options: [
+      { text: "Bribe guard", next: 1 },
+      { text: "Dig tunnel", next: 2 }
+    ]
+  },
+  {
+    text: "The guard takes your money and reports you. You're sent to solitary confinement.",
+    options: []
+  },
+  {
+    text: "You dig a tunnel using a spoon. After days of effort, you hit a hollow wall. Do you break through or hide the tunnel for now?",
+    options: [
+      { text: "Break through", next: 3 },
+      { text: "Hide it for now", next: 4 }
+    ]
+  },
+  {
+    text: "You break through and find an old sewer line. It smells foul but might lead to freedom.",
+    options: [
+      { text: "Enter sewer", next: 5 },
+      { text: "Go back to cell", next: 6 }
+    ]
+  },
+  {
+    text: "You hide the tunnel. That night, guards inspect your cell. Do you stay calm or distract them?",
+    options: [
+      { text: "Stay calm", next: 7 },
+      { text: "Distract them", next: 8 }
+    ]
+  },
+  {
+    text: "You crawl through the sewer, avoiding rats and debris. You reach a rusty ladder going up.",
+    options: [
+      { text: "Climb ladder", next: 9 },
+      { text: "Keep moving in sewer", next: 10 }
+    ]
+  },
+  {
+    text: "You return to your cell, but someone saw the tunnel. The warden has you watched.",
+    options: []
+  },
+  {
+    text: "You stay calm and the guards leave. Your tunnel is safe… for now.",
+    options: [
+      { text: "Continue digging later", next: 11 }
+    ]
+  },
+  {
+    text: "You cause a distraction and the guards leave early. It worked, but now you're on their radar.",
+    options: [
+      { text: "Speed up your escape", next: 11 }
+    ]
+  },
+  {
+    text: "The ladder leads to a locked hatch. Do you force it or listen for guards?",
+    options: [
+      { text: "Force it open", next: 12 },
+      { text: "Listen first", next: 13 }
+    ]
+  },
+  {
+    text: "You continue through the sewer and find a prison transport dock. A boat is tied up nearby.",
+    options: [
+      { text: "Steal the boat", next: 14 },
+      { text: "Wait and observe", next: 15 }
+    ]
+  },
+  {
+    text: "You dig deeper and find an old storage tunnel with uniforms and tools.",
+    options: [
+      { text: "Take guard uniform", next: 16 },
+      { text: "Take tools", next: 17 }
+    ]
+  },
+  {
+    text: "You force the hatch open — but trip an alarm. Guards catch you mid-escape.",
+    options: []
+  },
+  {
+    text: "You hear guards above. You wait until they leave, then escape silently into the night.",
+    options: [
+      { text: "Run into woods", next: 18 },
+      { text: "Hide near the fence", next: 19 }
+    ]
+  },
+  {
+    text: "You quietly steal the boat and row through the mist. But a spotlight appears.",
+    options: [
+      { text: "Duck low", next: 20 },
+      { text: "Abandon boat", next: 21 }
+    ]
+  },
+  {
+    text: "You see a schedule for prisoner transport and note a shift change at midnight.",
+    options: [
+      { text: "Plan escape during shift change", next: 22 }
+    ]
+  },
+  {
+    text: "You take a crowbar and rope. They may help you later.",
+    options: [
+      { text: "Continue into storage tunnel", next: 23 }
+    ]
+  },
+  {
+    text: "You run into the woods, branches scratching your skin. You find a road.",
+    options: [
+      { text: "Flag down a car", next: 24 },
+      { text: "Hide until morning", next: 25 }
+    ]
+  },
+  {
+    text: "You hide near the fence and overhear guards talking. One mentions a weak spot in the west wall.",
+    options: [
+      { text: "Investigate weak wall", next: 26 }
+    ]
+  },
+  {
+    text: "You duck just in time. The spotlight passes over. You drift away safely.",
+    options: [
+      { text: "Head toward open sea", next: 27 },
+      { text: "Follow riverbank", next: 28 }
+    ]
+  },
+  {
+    text: "You abandon the boat and swim to shore. You're soaked but alive.",
+    options: [
+      { text: "Find shelter", next: 29 },
+      { text: "Head for nearest road", next: 30 }
+    ]
+  },
+  {
+    text: "During shift change, you blend in with the guards and walk out the front gate.",
+    options: [
+      { text: "Disappear into the city", next: 31 },
+      { text: "Seek out the real criminal", next: 32 }
+    ]
+  },
+  {
+    text: "You find a hole leading to an old prison laundry system. It might lead outside.",
+    options: [
+      { text: "Climb in", next: 33 },
+      { text: "Set it as backup plan", next: 34 }
+    ]
+  },
+  {
+    text: "A kind driver gives you a ride. You fake a story. He drops you near a bus terminal.",
+    options: [
+      { text: "Take the bus far away", next: 35 },
+      { text: "Buy disguise items", next: 36 }
+    ]
+  },
+  {
+    text: "You hide until dawn. It’s safer now to move — but you’re cold and hungry.",
+    options: [
+      { text: "Search for food", next: 37 },
+      { text: "Break into nearby cabin", next: 38 }
+    ]
+  },
+  {
+    text: "The weak wall leads to a cliffside path. Dangerous but possible.",
+    options: [
+      { text: "Climb the path", next: 39 },
+      { text: "Look for safer route", next: 40 }
+    ]
+  },
+  {
+    text: "You row toward the open sea and eventually find a fishing boat. They take you in.",
+    options: []
+  },
+  {
+    text: "You follow the riverbank and find a ranger station. Do you risk asking for help?",
+    options: [
+      { text: "Ask for help", next: 41 },
+      { text: "Keep moving", next: 42 }
+    ]
+  },
+  {
+    text: "You find shelter in a barn. You sleep, finally free. But your future remains uncertain.",
+    options: []
+  },
+  {
+    text: "You find a small town. You're free, but posters of your face are everywhere.",
+    options: []
+  },
+  {
+    text: "You enter the city underground and begin your hunt to clear your name.",
+    options: []
+  },
+  {
+    text: "You climb into the laundry tunnel and escape through a delivery chute.",
+    options: []
+  },
+  {
+    text: "You save the tunnel as a backup. Smart move. It’ll be useful later.",
+    options: [
+      { text: "Focus on guard routines now", next: 22 }
+    ]
+  },
+  {
+    text: "You board a bus to a distant state. A new life awaits.",
+    options: []
+  },
+  {
+    text: "You buy clothes, hat, and sunglasses. A near-perfect disguise.",
+    options: [
+      { text: "Mingle in the crowd", next: 43 }
+    ]
+  },
+  {
+    text: "You search for berries and find an abandoned lunch box. Lucky!",
+    options: [ { text: "Eat and move on", next: 30 } ]
+  },
+  {
+    text: "The cabin has food and clothes. But a radio plays news of your escape.",
+    options: [
+      { text: "Turn it off and rest", next: 44 },
+      { text: "Leave immediately", next: 45 }
+    ]
+  },
+  {
+    text: "You climb the path, narrowly avoiding a fall. You emerge into the wild — free.",
+    options: []
+  },
+  {
+    text: "You search and find a drainage tunnel — longer but safer.",
+    options: [ { text: "Take it", next: 33 } ]
+  },
+  {
+    text: "The ranger recognizes you but pretends not to. He points you toward a safe house.",
+    options: [ { text: "Trust him and go", next: 46 } ]
+  },
+  {
+    text: "You avoid the ranger station. You're tired, but determined.",
+    options: []
+  },
+  {
+    text: "Your disguise works. You vanish into the crowd — just another face in the city.",
+    options: []
+  },
+  {
+    text: "You rest in the cabin. At dawn, you leave and begin your new life.",
+    options: []
+  },
+  {
+    text: "You vanish into the forest — hunted, haunted, but free. For now.",
+    options: []
+  },
+  {
+    text: "The safe house gives you shelter, a passport, and a second chance.",
+    options: []
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+,
+      "Horror Mansion": [
+  {
+    text: "You enter the Hollow House, a mansion abandoned for decades. Do you go upstairs or into the basement?",
+    options: [
+      { text: "Upstairs", next: 1 },
+      { text: "Basement", next: 2 }
+    ]
+  },
+  {
+    text: "A ghost drags you into the shadows of the upper floor. You're never seen again.",
+    options: []
+  },
+  {
+    text: "The basement is cold and damp. You find a strange old key on a table. Do you take it or leave it?",
+    options: [
+      { text: "Take the key", next: 3 },
+      { text: "Leave the key", next: 4 }
+    ]
+  },
+  {
+    text: "You take the key. A whisper echoes: “The attic holds the truth.”",
+    options: [
+      { text: "Find the attic", next: 5 },
+      { text: "Ignore the whisper", next: 6 }
+    ]
+  },
+  {
+    text: "You leave the key. A hidden door slams shut behind you, trapping you forever in the dark.",
+    options: []
+  },
+  {
+    text: "You find stairs leading to the attic, but hear scratching behind the walls. Do you press on or investigate the sound?",
+    options: [
+      { text: "Press on", next: 7 },
+      { text: "Investigate the sound", next: 8 }
+    ]
+  },
+  {
+    text: "You ignore the whisper and suddenly feel freezing fingers on your neck. Everything fades to black.",
+    options: []
+  },
+  {
+    text: "You enter the attic. A dusty mirror stands at its center. Your reflection moves on its own.",
+    options: [
+      { text: "Touch the mirror", next: 9 },
+      { text: "Look away", next: 10 }
+    ]
+  },
+  {
+    text: "You peel open the wall. Inside is a hidden room with a child's drawing and the word: 'HELP'.",
+    options: [
+      { text: "Take the drawing", next: 11 },
+      { text: "Back away", next: 12 }
+    ]
+  },
+  {
+    text: "Your hand is pulled into the mirror. You're now the trapped reflection, screaming silently forever.",
+    options: []
+  },
+  {
+    text: "You look away just in time. The mirror cracks, revealing a compartment inside the frame.",
+    options: [
+      { text: "Open the compartment", next: 13 },
+      { text: "Leave it alone", next: 14 }
+    ]
+  },
+  {
+    text: "You take the drawing. A whisper says: 'She remembers now.'",
+    options: [
+      { text: "Call out to her", next: 15 },
+      { text: "Burn the drawing", next: 16 }
+    ]
+  },
+  {
+    text: "You back away, but now footsteps follow you wherever you go.",
+    options: [
+      { text: "Run upstairs", next: 1 },
+      { text: "Hide in a closet", next: 17 }
+    ]
+  },
+  {
+    text: "Inside the mirror frame is a rusted locket and a page from a diary.",
+    options: [
+      { text: "Read the diary page", next: 18 },
+      { text: "Put on the locket", next: 19 }
+    ]
+  },
+  {
+    text: "You leave it alone. A shadow knocks over the mirror. It shatters and something escapes.",
+    options: []
+  },
+  {
+    text: "You call out: 'Who are you?' A child's voice answers: 'The house remembers.'",
+    options: [
+      { text: "Ask for help", next: 20 },
+      { text: "Demand to leave", next: 21 }
+    ]
+  },
+  {
+    text: "You burn the drawing. A scream echoes and blood drips from the ceiling.",
+    options: []
+  },
+  {
+    text: "You hide in the closet. Something is already inside. You never come out.",
+    options: []
+  },
+  {
+    text: "The diary says: 'Only the relic in the cellar can end this.'",
+    options: [
+      { text: "Head to the cellar", next: 22 },
+      { text: "Search attic more", next: 23 }
+    ]
+  },
+  {
+    text: "You wear the locket. You hear crying and a cold wind circles you. You are marked.",
+    options: [
+      { text: "Remove the locket", next: 24 },
+      { text: "Keep wearing it", next: 25 }
+    ]
+  },
+  {
+    text: "You ask for help. A hidden panel opens in the floor. Stairs descend into darkness.",
+    options: [
+      { text: "Go down", next: 26 },
+      { text: "Close it", next: 27 }
+    ]
+  },
+  {
+    text: "You demand to leave. A door opens... but it leads back into the same room.",
+    options: [
+      { text: "Keep walking", next: 28 },
+      { text: "Scream", next: 29 }
+    ]
+  },
+  {
+    text: "You enter the cellar. It smells like death. A pedestal holds the relic.",
+    options: [
+      { text: "Take relic", next: 30 },
+      { text: "Destroy it", next: 31 }
+    ]
+  },
+  {
+    text: "You find a diary entry saying: 'She hides in reflections. Avoid mirrors.'",
+    options: [
+      { text: "Break every mirror", next: 32 },
+      { text: "Cover mirrors with cloth", next: 33 }
+    ]
+  },
+  {
+    text: "You remove the locket. The crying stops. But a clawed hand scratches your neck.",
+    options: []
+  },
+  {
+    text: "You keep wearing it. You now see the ghosts clearly. They beckon you toward the truth.",
+    options: [
+      { text: "Follow them", next: 34 },
+      { text: "Run", next: 35 }
+    ]
+  },
+  {
+    text: "You descend into the floor. A room of mirrors surrounds you. One version of you smiles back.",
+    options: [
+      { text: "Talk to your reflection", next: 36 },
+      { text: "Shatter a mirror", next: 37 }
+    ]
+  },
+  {
+    text: "You close the panel. It slams itself open again. The house won’t let you choose.",
+    options: [
+      { text: "Jump down", next: 26 }
+    ]
+  },
+  {
+    text: "You walk endlessly. Every hallway leads back to where you started. You’re trapped in time.",
+    options: []
+  },
+  {
+    text: "You scream. A dozen voices scream back in chorus. Then silence.",
+    options: []
+  },
+  {
+    text: "You take the relic. Spirits howl. You feel cursed but powerful.",
+    options: [
+      { text: "Use power", next: 38 },
+      { text: "Drop relic", next: 39 }
+    ]
+  },
+  {
+    text: "You destroy the relic. The mansion shakes. Screams fade. Light pours in. It's over.",
+    options: []
+  },
+  {
+    text: "You smash every mirror. With each, a whisper dies. The curse weakens.",
+    options: [
+      { text: "Keep smashing", next: 40 },
+      { text: "Rest", next: 41 }
+    ]
+  },
+  {
+    text: "You cover the mirrors. Whispers stop. But now the cloth moves on its own.",
+    options: []
+  },
+  {
+    text: "You follow the ghosts. They lead you to a hidden grave beneath the house.",
+    options: [
+      { text: "Dig it up", next: 42 },
+      { text: "Say a prayer", next: 43 }
+    ]
+  },
+  {
+    text: "You run. The ghosts chase. You fall through the floor and vanish forever.",
+    options: []
+  },
+  {
+    text: "Your reflection speaks: 'Only one of us may live.'",
+    options: [
+      { text: "Trade places", next: 44 },
+      { text: "Fight", next: 45 }
+    ]
+  },
+  {
+    text: "You shatter a mirror. Blood pours out. A shadow screams.",
+    options: []
+  },
+  {
+    text: "You unleash the relic's power. You become a dark spirit bound to the house.",
+    options: []
+  },
+  {
+    text: "You drop the relic. The spirits consume you for wasting their last hope.",
+    options: []
+  },
+  {
+    text: "You keep smashing until the final whisper fades. The house sighs... and dies.",
+    options: []
+  },
+  {
+    text: "You rest. In your sleep, the mirror reflects someone else watching you.",
+    options: []
+  },
+  {
+    text: "You dig up the grave. It's your own body. You've been dead all along.",
+    options: []
+  },
+  {
+    text: "You say a prayer. The house weeps and releases all trapped souls, including you.",
+    options: []
+  },
+  {
+    text: "You trade places. You're free, but someone else is trapped in your body.",
+    options: []
+  },
+  {
+    text: "You fight your reflection. It wins. You're forgotten by the world.",
+    options: []
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+,  "CIA Mission": [
+  {
+    "text": "You’re Agent Alex Carter, top CIA operative. A rogue faction has stolen a deadly bioweapon. Do you accept the mission?",
+    "options": [
+      { "text": "Accept mission", "next": 1 },
+      { "text": "Decline", "next": 2 }
+    ]
+  },
+  {
+    "text": "You accept. Intel says the group is in Berlin. Do you go undercover or enter guns blazing?",
+    "options": [
+      { "text": "Undercover", "next": 3 },
+      { "text": "Guns blazing", "next": 4 }
+    ]
+  },
+  {
+    "text": "You decline. A week later, the bioweapon is released. Millions perish. Game over.",
+    "options": []
+  },
+  {
+    "text": "As a diplomat, you attend a gala. You spot a known arms dealer. Do you confront or follow?",
+    "options": [
+      { "text": "Confront", "next": 5 },
+      { "text": "Follow", "next": 6 }
+    ]
+  },
+  {
+    "text": "You storm the warehouse. It’s a trap. You're ambushed. Do you surrender or fight?",
+    "options": [
+      { "text": "Surrender", "next": 7 },
+      { "text": "Fight", "next": 8 }
+    ]
+  },
+  {
+    "text": "The arms dealer escapes and alerts the rogue faction. You’re now a target.",
+    "options": [
+      { "text": "Go into hiding", "next": 9 },
+      { "text": "Confront HQ", "next": 10 }
+    ]
+  },
+  {
+    "text": "Following him leads you to a secret facility. Do you enter or wait for backup?",
+    "options": [
+      { "text": "Enter alone", "next": 11 },
+      { "text": "Call for backup", "next": 12 }
+    ]
+  },
+  {
+    "text": "You're captured and interrogated. Game over.",
+    "options": []
+  },
+  {
+    "text": "You fight bravely but are overwhelmed. Game over.",
+    "options": []
+  },
+  {
+    "text": "You hide out in Prague and plan a new strategy.",
+    "options": [
+      { "text": "Hack their systems", "next": 13 },
+      { "text": "Intercept a courier", "next": 14 }
+    ]
+  },
+  {
+    "text": "HQ sends a rescue team, but it’s compromised. Trust is broken.",
+    "options": []
+  },
+  {
+    "text": "You sneak in and find the bioweapon. A timer is ticking!",
+    "options": [
+      { "text": "Disarm bomb", "next": 15 },
+      { "text": "Call in bomb squad", "next": 16 }
+    ]
+  },
+  {
+    "text": "Backup arrives but the facility self-destructs. You barely escape.",
+    "options": [
+      { "text": "Go dark", "next": 17 },
+      { "text": "Regroup at HQ", "next": 18 }
+    ]
+  },
+  {
+    "text": "You hack into their systems and uncover a mole in the CIA.",
+    "options": [
+      { "text": "Expose mole", "next": 19 },
+      { "text": "Use mole to feed false info", "next": 20 }
+    ]
+  },
+  {
+    "text": "The courier has documents revealing a second bomb. Do you destroy or relocate it?",
+    "options": [
+      { "text": "Destroy", "next": 21 },
+      { "text": "Relocate", "next": 22 }
+    ]
+  },
+  {
+    "text": "You disarm the bomb successfully, saving thousands.",
+    "options": [
+      { "text": "Report success", "next": 23 },
+      { "text": "Investigate further", "next": 24 }
+    ]
+  },
+  {
+    "text": "The bomb squad fails. Explosion levels the block. Game over.",
+    "options": []
+  },
+  {
+    "text": "You vanish and operate off-grid as a rogue operative.",
+    "options": [
+      { "text": "Form a team", "next": 25 },
+      { "text": "Work solo", "next": 26 }
+    ]
+  },
+  {
+    "text": "Back at HQ, you're questioned heavily. Trust is fading.",
+    "options": [
+      { "text": "Resign", "next": 27 },
+      { "text": "Prove loyalty", "next": 28 }
+    ]
+  },
+  {
+    "text": "The mole is exposed. Internal chaos erupts.",
+    "options": [
+      { "text": "Take control", "next": 29 },
+      { "text": "Stay low", "next": 30 }
+    ]
+  },
+  {
+    "text": "Feeding false info leads to the rogue faction's base.",
+    "options": [
+      { "text": "Assault base", "next": 31 },
+      { "text": "Sabotage systems", "next": 32 }
+    ]
+  },
+  {
+    "text": "You destroy the second bomb and become a national hero.",
+    "options": []
+  },
+  {
+    "text": "Mission ends. You're awarded a medal of honor.",
+    "options": []
+  },
+  {
+    "text": "You find clues pointing to a government cover-up.",
+    "options": [
+      { "text": "Expose it", "next": 33 },
+      { "text": "Bury it", "next": 34 }
+    ]
+  },
+  {
+    "text": "You form a black ops team to combat threats silently.",
+    "options": []
+  },
+  {
+    "text": "Working solo, you become a legend in the spy world.",
+    "options": []
+  },
+  {
+    "text": "You resign quietly. A peaceful life begins.",
+    "options": []
+  },
+  {
+    "text": "You prove your loyalty and are reinstated at higher rank.",
+    "options": []
+  },
+  {
+    "text": "You take control and restructure the agency.",
+    "options": []
+  },
+  {
+    "text": "You stay low, working as a ghost agent.",
+    "options": []
+  },
+  {
+    "text": "You launch a full assault and capture their leader.",
+    "options": []
+  },
+  {
+    "text": "You sabotage their weapons, ending the threat silently.",
+    "options": []
+  },
+  {
+    "text": "The cover-up is exposed. Political chaos ensues.",
+    "options": []
+  },
+  {
+    "text": "You bury it. The world remains safe—for now.",
+    "options": []
+  }
+] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+, "Ancient Curse" : [
+  {
+    "text": "You’re an archaeologist exploring a newly discovered pyramid. Do you enter through the main gate or a hidden tunnel?",
+    "options": [
+      { "text": "Main gate", "next": 1 },
+      { "text": "Hidden tunnel", "next": 2 }
+    ]
+  },
+  {
+    "text": "You trigger a trap and are impaled by spears. Game over.",
+    "options": []
+  },
+  {
+    "text": "The tunnel leads to a burial chamber. You find an amulet. Do you take it or leave it?",
+    "options": [
+      { "text": "Take it", "next": 3 },
+      { "text": "Leave it", "next": 4 }
+    ]
+  },
+  {
+    "text": "You take the amulet. Whispers surround you. Do you keep moving or investigate the sounds?",
+    "options": [
+      { "text": "Keep moving", "next": 5 },
+      { "text": "Investigate", "next": 6 }
+    ]
+  },
+  {
+    "text": "You leave it. The air suddenly grows cold. Do you run or light a torch?",
+    "options": [
+      { "text": "Run", "next": 7 },
+      { "text": "Light torch", "next": 8 }
+    ]
+  },
+  {
+    "text": "You reach a staircase leading deeper. Do you descend or rest?",
+    "options": [
+      { "text": "Descend", "next": 9 },
+      { "text": "Rest", "next": 10 }
+    ]
+  },
+  {
+    "text": "You find a sarcophagus. It creaks open. Do you flee or open it fully?",
+    "options": [
+      { "text": "Flee", "next": 11 },
+      { "text": "Open it", "next": 12 }
+    ]
+  },
+  {
+    "text": "Running triggers a collapse. You’re trapped forever.",
+    "options": []
+  },
+  {
+    "text": "With the torch lit, you reveal hieroglyphs hinting at a curse. Do you read them or move on?",
+    "options": [
+      { "text": "Read", "next": 13 },
+      { "text": "Move on", "next": 14 }
+    ]
+  },
+  {
+    "text": "Descending leads to an ancient chamber filled with gold.",
+    "options": [
+      { "text": "Take gold", "next": 15 },
+      { "text": "Ignore and search deeper", "next": 16 }
+    ]
+  },
+  {
+    "text": "While resting, you’re surrounded by scarabs. Game over.",
+    "options": []
+  },
+  {
+    "text": "You escape safely, but the amulet haunts your dreams.",
+    "options": []
+  },
+  {
+    "text": "Inside is a mummy with a map. Do you follow it or destroy it?",
+    "options": [
+      { "text": "Follow map", "next": 17 },
+      { "text": "Destroy map", "next": 18 }
+    ]
+  },
+  {
+    "text": "Reading the curse binds your soul to the tomb. Game over.",
+    "options": []
+  },
+  {
+    "text": "You avoid the curse and continue deeper. A puzzle door blocks your path.",
+    "options": [
+      { "text": "Solve puzzle", "next": 19 },
+      { "text": "Break door", "next": 20 }
+    ]
+  },
+  {
+    "text": "Taking gold angers the gods. The chamber collapses. Game over.",
+    "options": []
+  },
+  {
+    "text": "You discover a hidden scroll predicting your arrival.",
+    "options": [
+      { "text": "Read it", "next": 21 },
+      { "text": "Burn it", "next": 22 }
+    ]
+  },
+  {
+    "text": "The map leads to a forgotten priest's tomb.",
+    "options": [
+      { "text": "Enter tomb", "next": 23 },
+      { "text": "Avoid it", "next": 24 }
+    ]
+  },
+  {
+    "text": "The map was cursed. You fall into madness. Game over.",
+    "options": []
+  },
+  {
+    "text": "Puzzle solved. A secret passage opens.",
+    "options": [
+      { "text": "Enter", "next": 25 },
+      { "text": "Mark it and return", "next": 26 }
+    ]
+  },
+  {
+    "text": "You break the door, triggering darts. You're wounded.",
+    "options": [
+      { "text": "Treat wounds", "next": 27 },
+      { "text": "Keep going", "next": 28 }
+    ]
+  },
+  {
+    "text": "The scroll contains your name. Fate is watching.",
+    "options": [
+      { "text": "Destroy it", "next": 29 },
+      { "text": "Keep it", "next": 30 }
+    ]
+  },
+  {
+    "text": "The scroll was binding your soul. You vanish into dust.",
+    "options": []
+  },
+  {
+    "text": "The priest's tomb contains a resurrection ritual.",
+    "options": [
+      { "text": "Perform it", "next": 31 },
+      { "text": "Seal it forever", "next": 32 }
+    ]
+  },
+  {
+    "text": "You avoid the tomb and survive but live with regret.",
+    "options": []
+  },
+  {
+    "text": "Inside the secret passage is a relic of immense power.",
+    "options": [
+      { "text": "Take relic", "next": 33 },
+      { "text": "Seal passage", "next": 34 }
+    ]
+  },
+  {
+    "text": "You mark the passage and report to historians.",
+    "options": []
+  },
+  {
+    "text": "You treat your wounds and recover.",
+    "options": [
+      { "text": "Rest more", "next": 35 },
+      { "text": "Continue", "next": 36 }
+    ]
+  },
+  {
+    "text": "You push through pain and reach the final chamber.",
+    "options": [
+      { "text": "Enter", "next": 37 },
+      { "text": "Rest first", "next": 38 }
+    ]
+  },
+  {
+    "text": "You destroy the scroll and feel your destiny shift.",
+    "options": []
+  },
+  {
+    "text": "Keeping the scroll, you become its guardian.",
+    "options": []
+  },
+  {
+    "text": "The ritual awakens an undead army. Game over.",
+    "options": []
+  },
+  {
+    "text": "You seal it and the world is saved from doom.",
+    "options": []
+  },
+  {
+    "text": "Taking the relic grants immortality, but you’re cursed to never leave.",
+    "options": []
+  },
+  {
+    "text": "You seal the passage. The world remains safe.",
+    "options": []
+  },
+  {
+    "text": "You rest and leave the pyramid alive.",
+    "options": []
+  },
+  {
+    "text": "You reach a grand throne room guarded by spirits.",
+    "options": [
+      { "text": "Negotiate", "next": 39 },
+      { "text": "Fight", "next": 40 }
+    ]
+  },
+  {
+    "text": "You rest and dream of ancient gods calling your name.",
+    "options": []
+  },
+  {
+    "text": "The spirits accept your plea. You are crowned guardian of the tomb.",
+    "options": []
+  },
+  {
+    "text": "You fight bravely but perish. The curse lives on.",
+    "options": []
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+, "Man Vs Wild": [
+  {
+    "text": "Your plane crashes in the Arctic. You're alive but freezing. Do you search for shelter or build a fire?",
+    "options": [
+      { "text": "Search for shelter", "next": 1 },
+      { "text": "Build a fire", "next": 2 }
+    ]
+  },
+  {
+    "text": "You find a cave, but it's dark. Do you enter or look elsewhere?",
+    "options": [
+      { "text": "Enter", "next": 3 },
+      { "text": "Look elsewhere", "next": 4 }
+    ]
+  },
+  {
+    "text": "The fire warms you, but wild wolves are drawn to the smoke.",
+    "options": [
+      { "text": "Hide", "next": 5 },
+      { "text": "Fight", "next": 6 }
+    ]
+  },
+  {
+    "text": "Inside the cave, you find old supplies. Do you take them or leave them?",
+    "options": [
+      { "text": "Take", "next": 7 },
+      { "text": "Leave", "next": 8 }
+    ]
+  },
+  {
+    "text": "You get lost in a snowstorm and freeze. Game over.",
+    "options": []
+  },
+  {
+    "text": "You hide and the wolves leave. You're safe… for now.",
+    "options": [
+      { "text": "Track wolves", "next": 9 },
+      { "text": "Head toward mountains", "next": 10 }
+    ]
+  },
+  {
+    "text": "You fight but are overwhelmed. Game over.",
+    "options": []
+  },
+  {
+    "text": "The supplies include a map and flare. Do you use the flare now or save it?",
+    "options": [
+      { "text": "Use flare", "next": 11 },
+      { "text": "Save flare", "next": 12 }
+    ]
+  },
+  {
+    "text": "You leave the supplies and venture out. A blizzard hits.",
+    "options": [
+      { "text": "Find cover", "next": 13 },
+      { "text": "Keep walking", "next": 14 }
+    ]
+  },
+  {
+    "text": "You find a wolf den and hidden carcass stash.",
+    "options": [
+      { "text": "Steal meat", "next": 15 },
+      { "text": "Move away quietly", "next": 16 }
+    ]
+  },
+  {
+    "text": "You climb a mountain and spot smoke in the distance.",
+    "options": [
+      { "text": "Head toward smoke", "next": 17 },
+      { "text": "Stay put", "next": 18 }
+    ]
+  },
+  {
+    "text": "A plane sees the flare and you're rescued. You survive!",
+    "options": []
+  },
+  {
+    "text": "You save the flare and continue your journey with hope.",
+    "options": [
+      { "text": "Search for food", "next": 19 },
+      { "text": "Follow map", "next": 20 }
+    ]
+  },
+  {
+    "text": "You find a rocky crevice and shelter inside.",
+    "options": [
+      { "text": "Rest", "next": 21 },
+      { "text": "Explore nearby", "next": 22 }
+    ]
+  },
+  {
+    "text": "You keep walking but collapse from exhaustion. Game over.",
+    "options": []
+  },
+  {
+    "text": "The wolves find you stealing. You're mauled. Game over.",
+    "options": []
+  },
+  {
+    "text": "You move away safely and continue surviving.",
+    "options": [
+      { "text": "Hunt rabbits", "next": 23 },
+      { "text": "Build snow shelter", "next": 24 }
+    ]
+  },
+  {
+    "text": "You approach smoke and find a remote research base.",
+    "options": [
+      { "text": "Knock", "next": 25 },
+      { "text": "Wait and watch", "next": 26 }
+    ]
+  },
+  {
+    "text": "You stay and build a fire. A passing pilot sees it.",
+    "options": [
+      { "text": "Signal with flare", "next": 11 },
+      { "text": "Let them pass", "next": 27 }
+    ]
+  },
+  {
+    "text": "You find berries and a dead fox. Do you eat the meat or cook it first?",
+    "options": [
+      { "text": "Eat raw", "next": 28 },
+      { "text": "Cook first", "next": 29 }
+    ]
+  },
+  {
+    "text": "The map leads to a ranger station.",
+    "options": [
+      { "text": "Enter station", "next": 30 },
+      { "text": "Camp outside", "next": 31 }
+    ]
+  },
+  {
+    "text": "You rest and recover stamina.",
+    "options": [
+      { "text": "Explore next day", "next": 32 },
+      { "text": "Stay longer", "next": 33 }
+    ]
+  },
+  {
+    "text": "You explore and find wolf tracks.",
+    "options": [
+      { "text": "Follow tracks", "next": 34 },
+      { "text": "Avoid tracks", "next": 35 }
+    ]
+  },
+  {
+    "text": "You hunt successfully and eat well.",
+    "options": []
+  },
+  {
+    "text": "You build a strong igloo. You're protected from storms.",
+    "options": [
+      { "text": "Rest inside", "next": 36 },
+      { "text": "Travel after storm", "next": 37 }
+    ]
+  },
+  {
+    "text": "A researcher opens the door and rescues you.",
+    "options": []
+  },
+  {
+    "text": "You wait, but wolves ambush you. Game over.",
+    "options": []
+  },
+  {
+    "text": "The plane misses your fire. You're left stranded.",
+    "options": []
+  },
+  {
+    "text": "Eating raw meat makes you sick. Game over.",
+    "options": []
+  },
+  {
+    "text": "You cook and survive another day.",
+    "options": []
+  },
+  {
+    "text": "The station has food and radio gear.",
+    "options": [
+      { "text": "Use radio", "next": 38 },
+      { "text": "Stock supplies", "next": 39 }
+    ]
+  },
+  {
+    "text": "You camp and hear strange sounds all night.",
+    "options": [
+      { "text": "Investigate", "next": 40 },
+      { "text": "Ignore", "next": 18 }
+    ]
+  },
+  {
+    "text": "Exploration leads to a crashed snowmobile.",
+    "options": []
+  },
+  {
+    "text": "You stay and get frostbite. Game over.",
+    "options": []
+  },
+  {
+    "text": "Wolf tracks lead to a cave with stored supplies.",
+    "options": []
+  },
+  {
+    "text": "Avoiding tracks keeps you safe.",
+    "options": []
+  },
+  {
+    "text": "You rest safely inside your igloo.",
+    "options": []
+  },
+  {
+    "text": "You travel after the storm and find help nearby.",
+    "options": []
+  },
+  {
+    "text": "The radio contacts a rescue team. You're saved!",
+    "options": []
+  },
+  {
+    "text": "You gather food and gain energy for the next journey.",
+    "options": []
+  },
+  {
+    "text": "You discover an ice cave echoing with whispers…",
+    "options": []
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+, "Zombie Apocalypse": [
+  {
+    "text": "The zombie outbreak has begun. You're in a city under lockdown. Do you search for supplies or try to escape immediately?",
+    "options": [
+      { "text": "Search for supplies", "next": 1 },
+      { "text": "Escape immediately", "next": 2 }
+    ]
+  },
+  {
+    "text": "You find a backpack with food and a bat. Zombies are nearby. Do you fight or hide?",
+    "options": [
+      { "text": "Fight", "next": 3 },
+      { "text": "Hide", "next": 4 }
+    ]
+  },
+  {
+    "text": "You sneak out of the city but run into a horde. Do you run through them or hide in a car?",
+    "options": [
+      { "text": "Run through", "next": 5 },
+      { "text": "Hide in car", "next": 6 }
+    ]
+  },
+  {
+    "text": "You bash your way through a few zombies but get bitten. You turn. Game over.",
+    "options": []
+  },
+  {
+    "text": "You hide and the zombies pass. You move on.",
+    "options": [
+      { "text": "Search nearby buildings", "next": 7 },
+      { "text": "Climb to a rooftop", "next": 8 }
+    ]
+  },
+  {
+    "text": "You are overwhelmed by the horde. Game over.",
+    "options": []
+  },
+  {
+    "text": "You hide in the car and find keys inside. Drive away?",
+    "options": [
+      { "text": "Drive away", "next": 9 },
+      { "text": "Abandon car", "next": 10 }
+    ]
+  },
+  {
+    "text": "You find medicine and a map in a pharmacy.",
+    "options": [
+      { "text": "Use map to plan", "next": 11 },
+      { "text": "Rest in pharmacy", "next": 12 }
+    ]
+  },
+  {
+    "text": "You reach the rooftop and signal a chopper. No one sees you.",
+    "options": [
+      { "text": "Try again tomorrow", "next": 13 },
+      { "text": "Leave rooftop", "next": 14 }
+    ]
+  },
+  {
+    "text": "You drive to the outskirts and see a military blockade.",
+    "options": [
+      { "text": "Approach blockade", "next": 15 },
+      { "text": "Avoid it", "next": 16 }
+    ]
+  },
+  {
+    "text": "You abandon the car and head into the woods.",
+    "options": [
+      { "text": "Camp", "next": 17 },
+      { "text": "Keep walking", "next": 18 }
+    ]
+  },
+  {
+    "text": "The map shows a safe zone to the north.",
+    "options": [
+      { "text": "Head north", "next": 19 },
+      { "text": "Look for survivors", "next": 20 }
+    ]
+  },
+  {
+    "text": "You sleep too long and are found. Game over.",
+    "options": []
+  },
+  {
+    "text": "You try again tomorrow and see a drone. Do you light a flare?",
+    "options": [
+      { "text": "Yes", "next": 21 },
+      { "text": "No", "next": 22 }
+    ]
+  },
+  {
+    "text": "You leave the rooftop and fall into an alley ambush. Game over.",
+    "options": []
+  },
+  {
+    "text": "The soldiers check you for bites. You're clean. You're let in!",
+    "options": []
+  },
+  {
+    "text": "You avoid the blockade and find a quiet highway.",
+    "options": [
+      { "text": "Follow highway", "next": 23 },
+      { "text": "Head into woods", "next": 24 }
+    ]
+  },
+  {
+    "text": "You camp and are awoken by howls. Wolves?",
+    "options": [
+      { "text": "Climb tree", "next": 25 },
+      { "text": "Stay quiet", "next": 26 }
+    ]
+  },
+  {
+    "text": "You collapse from exhaustion. Game over.",
+    "options": []
+  },
+  {
+    "text": "You meet a family. Do you join them or stay solo?",
+    "options": [
+      { "text": "Join them", "next": 27 },
+      { "text": "Stay solo", "next": 28 }
+    ]
+  },
+  {
+    "text": "You head north but lose the map in a storm.",
+    "options": [
+      { "text": "Follow stars", "next": 29 },
+      { "text": "Wait for clear skies", "next": 30 }
+    ]
+  },
+  {
+    "text": "The drone alerts a rescue team. You're picked up!",
+    "options": []
+  },
+  {
+    "text": "The drone ignores you. You're left behind.",
+    "options": []
+  },
+  {
+    "text": "The highway leads to a broken-down bus.",
+    "options": [
+      { "text": "Search bus", "next": 31 },
+      { "text": "Move on", "next": 32 }
+    ]
+  },
+  {
+    "text": "The woods hide a supply cache.",
+    "options": [
+      { "text": "Take supplies", "next": 33 },
+      { "text": "Set up camp", "next": 34 }
+    ]
+  },
+  {
+    "text": "You climb a tree and stay safe.",
+    "options": []
+  },
+  {
+    "text": "You stay quiet and the wolves leave.",
+    "options": []
+  },
+  {
+    "text": "The family protects you. You find hope again.",
+    "options": []
+  },
+  {
+    "text": "You go solo and are overwhelmed. Game over.",
+    "options": []
+  },
+  {
+    "text": "You follow the stars and find a glowing city ahead.",
+    "options": []
+  },
+  {
+    "text": "You wait and freeze overnight. Game over.",
+    "options": []
+  },
+  {
+    "text": "You find meds and a radio in the bus.",
+    "options": [
+      { "text": "Use radio", "next": 35 },
+      { "text": "Save it", "next": 36 }
+    ]
+  },
+  {
+    "text": "You move on and spot a military convoy.",
+    "options": [
+      { "text": "Flag them down", "next": 37 },
+      { "text": "Hide", "next": 38 }
+    ]
+  },
+  {
+    "text": "The supplies keep you strong through the storm.",
+    "options": []
+  },
+  {
+    "text": "You camp but zombies find your fire. Game over.",
+    "options": []
+  },
+  {
+    "text": "You call for help. A voice responds: help is coming.",
+    "options": []
+  },
+  {
+    "text": "You save the radio and listen for updates.",
+    "options": []
+  },
+  {
+    "text": "The convoy stops and takes you in.",
+    "options": []
+  },
+  {
+    "text": "You hide, but they drive off without seeing you.",
+    "options": []
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+, "The Count of Monte Cristo": [
+  {
+    text: "You are Edmond Dantès, a young sailor returning to Marseille. Do you visit your fiancée Mercédès or report to your employer first?",
+    options: [
+      { text: "Visit Mercédès", next: 1 },
+      { text: "Report to employer", next: 2 }
+    ]
+  },
+  {
+    text: "Mercédès is overjoyed. You promise to marry soon.",
+    options: [
+      { text: "Prepare for the wedding", next: 3 },
+      { text: "Leave to visit your father", next: 4 }
+    ]
+  },
+  {
+    text: "Your employer Fernand congratulates you on your promotion. Danglars eyes you with jealousy.",
+    options: [
+      { text: "Celebrate with them", next: 5 },
+      { text: "Stay cautious", next: 6 }
+    ]
+  },
+  {
+    text: "Your wedding preparations begin. The town is buzzing with joy.",
+    options: [
+      { text: "Invite Danglars", next: 7 },
+      { text: "Exclude Danglars", next: 8 }
+    ]
+  },
+  {
+    text: "Your father is proud but looks tired and hungry.",
+    options: [
+      { text: "Give him money", next: 9 },
+      { text: "Ask what happened", next: 10 }
+    ]
+  },
+  {
+    text: "During the celebration, you become dizzy. You collapse.",
+    options: [
+      { text: "Blame it on excitement", next: 11 },
+      { text: "Suspect poisoning", next: 12 }
+    ]
+  },
+  {
+    text: "You sense Danglars and Fernand plotting in whispers.",
+    options: [
+      { text: "Eavesdrop", next: 13 },
+      { text: "Ignore it", next: 14 }
+    ]
+  },
+  {
+    text: "Danglars smiles politely, but you sense his resentment.",
+    options: [
+      { text: "Confront him", next: 15 },
+      { text: "Watch him silently", next: 16 }
+    ]
+  },
+  {
+    text: "You leave Danglars out. He scowls, but says nothing.",
+    options: [
+      { text: "Tell Mercédès", next: 17 },
+      { text: "Let it go", next: 18 }
+    ]
+  },
+  {
+    text: "Your father is grateful and tears up. You promise to care for him always.",
+    options: [
+      { text: "Buy more food", next: 19 },
+      { text: "Take him to the wedding", next: 20 }
+    ]
+  },
+  {
+    text: "Your father admits he borrowed money from Caderousse, who's been pressuring him.",
+    options: [
+      { text: "Confront Caderousse", next: 21 },
+      { text: "Pay the debt silently", next: 22 }
+    ]
+  },
+  {
+    text: "You shake it off and continue the party. Mercédès looks worried.",
+    options: [
+      { text: "Reassure her", next: 23 },
+      { text: "Sit down and rest", next: 24 }
+    ]
+  },
+  {
+    text: "You realize someone slipped something in your drink. You panic.",
+    options: [
+      { text: "Accuse Danglars", next: 25 },
+      { text: "Stay quiet for now", next: 26 }
+    ]
+  },
+  {
+    text: "You hear Fernand say 'We must stop Dantès before the wedding.'",
+    options: [
+      { text: "Alert Mercédès", next: 27 },
+      { text: "Gather proof first", next: 28 }
+    ]
+  },
+  {
+    text: "You ignore it, but a chill runs down your spine.",
+    options: [
+      { text: "Tell Mercédès you’re worried", next: 29 },
+      { text: "Focus on the wedding", next: 30 }
+    ]
+  },
+  {
+    text: "Danglars denies everything and laughs. 'You're too sensitive, Dantès.'",
+    options: [
+      { text: "Back off", next: 31 },
+      { text: "Keep watching him", next: 32 }
+    ]
+  },
+  {
+    text: "You observe quietly. Danglars and Fernand speak in hushed tones.",
+    options: [
+      { text: "Follow them", next: 33 },
+      { text: "Tell the police", next: 34 }
+    ]
+  },
+  {
+    text: "Mercédès tells you to be careful. She senses danger.",
+    options: [
+      { text: "Cancel the wedding", next: 35 },
+      { text: "Proceed as planned", next: 36 }
+    ]
+  },
+  {
+    text: "You let it go. Perhaps it's your imagination.",
+    options: [
+      { text: "Go for a walk", next: 37 },
+      { text: "Stay close to Mercédès", next: 38 }
+    ]
+  },
+  {
+    text: "Your father feasts happily. He blesses your marriage.",
+    options: [
+      { text: "Plan a better future", next: 39 },
+      { text: "Tell him about the threats", next: 40 }
+    ]
+  },
+  {
+    text: "You arrive at Caderousse’s and accuse him. He is drunk and hostile.",
+    options: [
+      { text: "Fight him", next: 41 },
+      { text: "Leave quietly", next: 42 }
+    ]
+  },
+  {
+    text: "You pay off Caderousse. He thanks you awkwardly.",
+    options: [
+      { text: "Demand he leave your father alone", next: 43 },
+      { text: "Leave quickly", next: 44 }
+    ]
+  },
+  {
+    text: "Mercédès kisses your forehead. 'It’ll be over soon.'",
+    options: [
+      { text: "Trust her", next: 45 },
+      { text: "Doubt lingers", next: 46 }
+    ]
+  },
+  {
+    text: "You rest and feel better. The tension in the air thickens.",
+    options: [
+      { text: "Postpone the ceremony", next: 47 },
+      { text: "Continue onward", next: 48 }
+    ]
+  },
+  {
+    text: "You accuse Danglars, who laughs and says, 'Where's your proof?'",
+    options: [
+      { text: "Look for it", next: 49 },
+      { text: "Drop it", next: 50 }
+    ]
+  },
+  {
+    text: "You hide your suspicions and bide your time.",
+    options: [
+      { text: "Spy on them", next: 51 },
+      { text: "Confront Fernand", next: 52 }
+    ]
+  },
+  {
+    text: "You warn Mercédès. She pleads with you to flee the city.",
+    options: [
+      { text: "Flee", next: 53 },
+      { text: "Refuse to run", next: 54 }
+    ]
+  },
+  {
+    text: "You gather evidence of their plot. A false letter to the crown.",
+    options: [
+      { text: "Take it to Villefort", next: 55 },
+      { text: "Confront the accusers", next: 56 }
+    ]
+  },
+  {
+    text: "You tell Mercédès everything. She hugs you tightly.",
+    options: [
+      { text: "Stay together", next: 57 },
+      { text: "Send her away for safety", next: 58 }
+    ]
+  },
+  {
+    text: "You plan the wedding anyway. The day arrives.",
+    options: [
+      { text: "Go through with it", next: 59 },
+      { text: "Call it off last minute", next: 60 }
+    ]
+  },
+
+  // CONTINUED IN NEXT MESSAGE...
+  {
+    text: "You try to back off, but it's too late. Guards arrive and arrest you.",
+    options: [
+      { text: "Resist arrest", next: 61 },
+      { text: "Go peacefully", next: 62 }
+    ]
+  },
+  {
+    text: "You continue watching. They hand something to a messenger.",
+    options: [
+      { text: "Follow the messenger", next: 63 },
+      { text: "Intercept the note", next: 64 }
+    ]
+  },
+  {
+    text: "You follow them into an alley and overhear them plotting your downfall.",
+    options: [
+      { text: "Take a knife and confront them", next: 65 },
+      { text: "Go find a witness", next: 66 }
+    ]
+  },
+  {
+    text: "The police warn you not to make baseless accusations.",
+    options: [
+      { text: "Try another officer", next: 67 },
+      { text: "Give up", next: 68 }
+    ]
+  },
+  {
+    text: "You cancel the wedding. Mercédès is heartbroken.",
+    options: [
+      { text: "Explain everything", next: 69 },
+      { text: "Disappear without a word", next: 70 }
+    ]
+  },
+  {
+    text: "You marry Mercédès. Just as the priest finishes, guards burst in.",
+    options: []
+  },
+  {
+    text: "You resist and are beaten. You lose consciousness.",
+    options: []
+  },
+  {
+    text: "You are dragged before Villefort. He recognizes the letter implicates his father.",
+    options: [
+      { text: "Beg for mercy", next: 71 },
+      { text: "Threaten to reveal the letter", next: 72 }
+    ]
+  },
+  {
+    text: "You trail the messenger to a government office.",
+    options: [
+      { text: "Break in", next: 73 },
+      { text: "Wait outside", next: 74 }
+    ]
+  },
+  {
+    text: "You intercept the note. It confirms the plot. Suddenly, someone shouts 'Thief!'",
+    options: [
+      { text: "Run", next: 75 },
+      { text: "Hide", next: 76 }
+    ]
+  },
+  {
+    text: "You draw your knife. Danglars pulls a pistol. A crowd gathers.",
+    options: [
+      { text: "Attack", next: 77 },
+      { text: "Retreat", next: 78 }
+    ]
+  },
+  {
+    text: "You bring a witness, but Villefort dismisses them.",
+    options: [
+      { text: "Try again", next: 79 },
+      { text: "Lose hope", next: 80 }
+    ]
+  },
+  {
+    text: "Another officer agrees to help. But he's secretly paid off.",
+    options: [
+      { text: "Bribe him yourself", next: 81 },
+      { text: "Threaten exposure", next: 82 }
+    ]
+  },
+  {
+    text: "You disappear. Mercédès believes you abandoned her.",
+    options: []
+  },
+  {
+    text: "You confess everything. Mercédès vows to wait for you forever.",
+    options: []
+  },
+  {
+    text: "Villefort smiles coldly. You are thrown into Château d'If.",
+    options: []
+  },
+  {
+    text: "Villefort destroys the letter and sends you to prison.",
+    options: []
+  },
+  {
+    text: "You try to break in, but you're caught and arrested.",
+    options: []
+  },
+  {
+    text: "You wait. The messenger never returns. You feel defeated.",
+    options: []
+  },
+  {
+    text: "You sprint through the streets. Guards chase you.",
+    options: []
+  },
+  {
+    text: "You duck into a cellar and escape... for now.",
+    options: []
+  },
+  {
+    text: "You lunge. Danglars shoots and wounds you.",
+    options: []
+  },
+  {
+    text: "You flee. They mock you as a coward.",
+    options: []
+  },
+  {
+    text: "You try again but are arrested on false charges.",
+    options: []
+  },
+  {
+    text: "You sit in your cell. Days become years. A whisper in the wall changes everything...",
+    options: []
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    };
+
+    const storyDiv = document.getElementById('story');
+    const optionsDiv = document.getElementById('options');
+    const adventureSelect = document.getElementById('adventureSelect');
+    const toggleThemeButton = document.getElementById('toggleTheme');
+
+    for (let key in adventures) {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = key;
+      adventureSelect.appendChild(opt);
+    }
+
+    let currentAdventure = [];
+    let currentIndex = 0;
+
+    function startAdventure(name) {
+      currentAdventure = adventures[name];
+      currentIndex = 0;
+      renderScene();
+    }
+
+    function renderScene() {
+      const scene = currentAdventure[currentIndex];
+      storyDiv.textContent = scene.text;
+      optionsDiv.innerHTML = '';
+      scene.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.classList.add('option-btn');
+        btn.textContent = opt.text;
+        btn.onclick = () => {
+          currentIndex = opt.next;
+          renderScene();
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    adventureSelect.addEventListener('change', e => startAdventure(e.target.value));
+    startAdventure(adventureSelect.value = Object.keys(adventures)[0]);
+
+    toggleThemeButton.addEventListener('click', () => {
+      const isDarkMode = document.body.style.backgroundColor === 'rgb(18, 18, 18)';
+      if (isDarkMode) {
+        document.body.style.backgroundColor = '#ffffff';
+        document.body.style.color = '#000000';
+        document.body.style.fontWeight = 'bold'; // Make fonts bold in light mode
+        document.querySelector('header').style.backgroundColor = '#f1f1f1';
+        document.querySelector('header').style.color = '#000000';
+        document.querySelector('header').style.fontWeight = 'bold'; // Bold header
+        document.querySelector('footer').style.backgroundColor = '#f1f1f1';
+        document.querySelector('footer').style.color = '#000000';
+        document.querySelector('footer').style.fontWeight = 'bold'; // Bold footer
+        document.querySelectorAll('footer a').forEach(link => {
+          link.style.color = '#000000';
+          link.style.fontWeight = 'bold'; // Bold footer links
+        });
+        document.getElementById('game').style.backgroundColor = '#f9f9f9';
+        document.getElementById('game').style.color = '#000000';
+        document.getElementById('game').style.fontWeight = 'bold'; // Bold game content
+      } else {
+        document.body.style.backgroundColor = '#121212';
+        document.body.style.color = '#f1f1f1';
+        document.body.style.fontWeight = 'normal'; // Reset font weight in dark mode
+        document.querySelector('header').style.backgroundColor = '#1e1e1e';
+        document.querySelector('header').style.color = '#f1f1f1';
+        document.querySelector('header').style.fontWeight = 'normal'; // Reset header font weight
+        document.querySelector('footer').style.backgroundColor = '#1e1e1e';
+        document.querySelector('footer').style.color = '#f1f1f1';
+        document.querySelector('footer').style.fontWeight = 'normal'; // Reset footer font weight
+        document.querySelectorAll('footer a').forEach(link => {
+          link.style.color = '#f1f1f1';
+          link.style.fontWeight = 'normal'; // Reset footer links font weight
+        });
+        document.getElementById('game').style.backgroundColor = '#1e1e1e';
+        document.getElementById('game').style.color = '#f1f1f1';
+        document.getElementById('game').style.fontWeight = 'normal'; // Reset game content font weight
+      }
+    });
+
+    // Add event listener for the restart button
+    const restartButton = document.getElementById('restartAdventure');
+    restartButton.addEventListener('click', () => {
+      currentIndex = 0; // Reset the current index to the start
+      renderScene(); // Render the first scene of the current adventure
+    });
+  </script>
+</body>
+</html>
